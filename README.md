@@ -20,3 +20,8 @@ Android捕捉崩溃日志并展示在手机页面，方便开发查看，同时�
 implementation 'com.github.HaiTaoFeng:CrashHandlerTool:1.0'
 
 3.点击Sync Now ，等待同步完成。
+
+4.在Application中进行初始化，例如：
+ CrashHandler.getInstance().init(this,"/storage/emulated/0/" + getPackageName() + "/");
+ 
+ 第一个参数是Context，第二个参数是日志存放路径，格式是：/xxx/
