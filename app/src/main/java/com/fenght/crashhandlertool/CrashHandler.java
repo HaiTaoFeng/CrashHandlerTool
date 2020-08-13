@@ -53,7 +53,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
     //日志文件存储路径
-    private String path = "/mnt/sdcard/crash/";
+    private String path = "/storage/emulated/0/";
     private String file_path;
     //最大文件数量，超过数量即删除旧日志文件
     private int limitLogCount = 50;
@@ -70,6 +70,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     /**
      * 初始化
+     * @param context 上下文
+     * @param path 日志存放路径，格式：/xxx/xxx/
      */
     public void init(Context context,String path) {
         mContext = context;
@@ -90,7 +92,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 Log.e(TAG, "error : ", e);
             }
@@ -195,14 +197,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
         String result = writer.toString();
         sb.append(result);
         try {
-            long timestamp = System.currentTimeMillis();
             String time = formatter.format(new Date());
             //日志文件名称
-            String fileName = "crash-" + time + "-" + timestamp + ".txt";
+            String fileName = "crash-" + time + ".txt";
             file_path = path + fileName;
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 File dir = new File(path);
-                Log.e("fht",dir.getAbsolutePath());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -240,13 +240,11 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 if(s == null) break;
                 //由于目前尚未确定以何种方式发送，所以先打出log日志。
                 //TODO 发送文件到服务器
-                Log.i("info", s);
+                Log.i(TAG, s);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally{   // 关闭流
+        } finally{   // 关闭流
             try {
                 reader.close();
                 fis.close();
@@ -301,6 +299,14 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 return true;
             return false;
         }
+    }
+
+    /**
+     * 设置日志文件最大保存数量，超过这个数删除最早的日志后再保存
+     * @param count 数量
+     */
+    public void setLogCount(int count){
+        limitLogCount = count;
     }
 }
 
